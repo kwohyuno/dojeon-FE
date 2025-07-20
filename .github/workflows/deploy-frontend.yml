@@ -1,0 +1,108 @@
+name: Deploy Frontend
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'production'
+    
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # Enable error logging
+          set -e
+          exec 2> >(tee /tmp/deploy_frontend_error.log >&2)
+          
+          echo "=== Starting frontend deployment at $(date) ==="
+          
+          # Install dependencies (Docker, Git, Node.js)
+          echo "Installing required packages..."
+          sudo yum update -y
+          sudo yum install -y git docker yum-utils
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          sudo usermod -aG docker ec2-user
+          
+          # Install Node.js 18
+          echo "Installing Node.js 18..."
+          curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+          sudo yum install -y nodejs
+          echo "Node.js installation completed: $(node --version)"
+          
+          # Remove old code completely
+          echo "Cleaning up previous deployment..."
+          cd /home/ec2-user
+          sudo rm -rf dojeon-frontend
+          mkdir -p dojeon-frontend
+          cd dojeon-frontend
+          echo "Cleaned and entered: $(pwd)"
+          
+          # Clone latest code
+          echo "Cloning latest code..."
+          git clone https://github.com/kwohyuno/dojeon-FE.git .
+          echo "Git clone completed"
+          
+          # Install npm dependencies
+          echo "Installing npm dependencies..."
+          npm ci --only=production
+          echo "Npm dependencies installation completed"
+          
+          # Build React app
+          echo "Building React app..."
+          npm run build
+          echo "React build completed"
+          
+          # Stop existing container
+          echo "Stopping existing container..."
+          sudo docker stop dojeon-frontend || echo "No existing container to stop"
+          sudo docker rm dojeon-frontend || echo "No existing container to remove"
+          
+          # Build Docker image
+          echo "Building Docker image..."
+          sudo docker build -t dojeon-frontend:latest .
+          echo "Docker build completed"
+          
+          # Run new container
+          echo "Starting new container..."
+          sudo docker run -d \
+            --name dojeon-frontend \
+            --restart unless-stopped \
+            -p 3000:80 \
+            dojeon-frontend:latest
+          
+          # Verify container is running
+          echo "Verifying container status..."
+          sleep 10
+          sudo docker ps | grep dojeon-frontend || echo "Container not found in docker ps"
+          
+          # Check container logs
+          echo "Container logs:"
+          sudo docker logs dojeon-frontend --tail 20 || echo "Failed to get container logs"
+          
+          # Clean up old images
+          echo "Cleaning up old images..."
+          sudo docker image prune -f
+          
+          echo "=== Frontend deployment completed at $(date) ==="
+          
+          # Show error log if exists
+          if [ -f /tmp/deploy_frontend_error.log ]; then
+            echo "=== Error Log ==="
+            cat /tmp/deploy_frontend_error.log
+          fi 
