@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import './PostDetail.css';
 import jinImage from '../jin.jpeg';
 
@@ -52,7 +53,7 @@ const PostDetail: React.FC = () => {
       
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/api/posts/${id}`, {
+        const response = await fetch(API_ENDPOINTS.POST_DETAIL(id!), {
           signal: abortControllerRef.current.signal,
           cache: 'no-cache'
         });
@@ -77,7 +78,7 @@ const PostDetail: React.FC = () => {
 
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/comments/post/${id}`);
+        const response = await fetch(API_ENDPOINTS.COMMENTS_BY_POST(id!));
         if (response.ok) {
           const data = await response.json();
           setComments(data);
@@ -92,7 +93,7 @@ const PostDetail: React.FC = () => {
         const userEmail = localStorage.getItem('userEmail');
         if (!userEmail) return;
         
-        const response = await fetch(`http://localhost:8080/api/posts/${id}/like/check?userEmail=${encodeURIComponent(userEmail)}`);
+        const response = await fetch(API_ENDPOINTS.POST_LIKE_CHECK(id!, userEmail));
         if (response.ok) {
           const data = await response.json();
           setHasLiked(data.hasLiked);
@@ -139,7 +140,7 @@ const PostDetail: React.FC = () => {
         return;
       }
       
-      const response = await fetch(`http://localhost:8080/api/posts/${id}/like`, {
+      const response = await fetch(API_ENDPOINTS.POST_LIKE(id!), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +172,7 @@ const PostDetail: React.FC = () => {
     setCommentLoading(true);
     try {
       const userEmail = localStorage.getItem('userEmail') || 'Anonymous';
-      const response = await fetch('http://localhost:8080/api/comments', {
+      const response = await fetch(API_ENDPOINTS.COMMENTS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

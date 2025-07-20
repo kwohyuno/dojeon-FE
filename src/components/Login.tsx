@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import './Login.css';
 import jinImage from '../jin.jpeg';
 
@@ -16,7 +17,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
         
         // Record visit
         try {
-          await fetch('http://localhost:8080/api/visitors/record', {
+          await fetch(API_ENDPOINTS.VISITORS_RECORD, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',

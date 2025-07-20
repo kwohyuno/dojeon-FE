@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostList from './PostList';
 import jinImage from '../jin.jpeg';
+import { API_ENDPOINTS } from '../config/api';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -41,7 +42,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userEmail }) => {
 
   const fetchConcerts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/concerts');
+      const response = await fetch(API_ENDPOINTS.CONCERTS);
       if (response.ok) {
         const data = await response.json();
         setConcerts(data);
@@ -53,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userEmail }) => {
 
   const fetchTodayVisitors = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/visitors/today');
+      const response = await fetch(API_ENDPOINTS.VISITORS_TODAY);
       if (response.ok) {
         const data = await response.json();
         setTodayVisitors(data.todayVisitors);
@@ -68,7 +69,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userEmail }) => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:8080/api/concerts', {
+      const response = await fetch(API_ENDPOINTS.CONCERTS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

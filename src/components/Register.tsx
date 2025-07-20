@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import './Register.css';
 import jinImage from '../jin.jpeg';
 
@@ -79,7 +80,7 @@ const Register: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/users/register', {
+              const response = await fetch(API_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

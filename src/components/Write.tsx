@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import jinImage from '../jin.jpeg';
 import './Write.css';
 
@@ -32,7 +33,7 @@ const Write: React.FC = () => {
 
   const fetchConcerts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/concerts');
+      const response = await fetch(API_ENDPOINTS.CONCERTS);
       if (response.ok) {
         const data = await response.json();
         setConcerts(data);
@@ -64,7 +65,7 @@ const Write: React.FC = () => {
         concertId: selectedConcertId || undefined
       };
 
-      const response = await fetch('http://localhost:8080/api/posts', {
+      const response = await fetch(API_ENDPOINTS.POSTS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

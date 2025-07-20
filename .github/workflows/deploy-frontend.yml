@@ -63,9 +63,9 @@ jobs:
           npm ci --only=production
           echo "Npm dependencies installation completed"
           
-          # Build React app
+          # Build React app with environment variables
           echo "Building React app..."
-          npm run build
+          REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }} npm run build
           echo "React build completed"
           
           # Stop existing container

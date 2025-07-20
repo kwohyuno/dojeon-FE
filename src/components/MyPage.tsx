@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import './MyPage.css';
 import jinImage from '../jin.jpeg';
 
@@ -77,7 +78,7 @@ const MyPage: React.FC = () => {
     setEditError('');
 
     try {
-      const response = await fetch(`http://localhost:8080/api/users/update-profile`, {
+      const response = await fetch(API_ENDPOINTS.UPDATE_PROFILE, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -129,21 +130,21 @@ const MyPage: React.FC = () => {
 
       try {
         // Fetch profile data
-        const profileResponse = await fetch(`http://localhost:8080/api/users/profile?email=${encodeURIComponent(userEmail)}`);
+        const profileResponse = await fetch(`${API_ENDPOINTS.PROFILE}?email=${encodeURIComponent(userEmail)}`);
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           setProfile(profileData);
         }
 
         // Fetch statistics data
-        const statsResponse = await fetch(`http://localhost:8080/api/users/statistics?email=${encodeURIComponent(userEmail)}`);
+        const statsResponse = await fetch(`${API_ENDPOINTS.STATISTICS}?email=${encodeURIComponent(userEmail)}`);
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setStatistics(statsData);
         }
 
         // Fetch activity data
-        const activityResponse = await fetch(`http://localhost:8080/api/users/activity?email=${encodeURIComponent(userEmail)}`);
+        const activityResponse = await fetch(`${API_ENDPOINTS.ACTIVITY}?email=${encodeURIComponent(userEmail)}`);
         if (activityResponse.ok) {
           const activityData = await activityResponse.json();
           setActivity(activityData);

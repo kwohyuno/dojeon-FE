@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_ENDPOINTS } from '../config/api';
 import './PostList.css';
 import jinImage from '../jin.jpeg';
 
@@ -49,10 +50,10 @@ const PostList: React.FC<PostListProps> = ({ selectedConcertId }) => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      let url = 'http://localhost:8080/api/posts';
+      let url = API_ENDPOINTS.POSTS;
       
       if (selectedConcertId) {
-        url = `http://localhost:8080/api/posts/concert/${selectedConcertId}`;
+        url = API_ENDPOINTS.POSTS_BY_CONCERT(selectedConcertId.toString());
       }
       
       const response = await fetch(url);
