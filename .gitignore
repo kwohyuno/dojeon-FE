@@ -109,3 +109,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# Docker
+docker-compose.yml
+.dockerignore
