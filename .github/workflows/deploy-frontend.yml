@@ -63,8 +63,11 @@ jobs:
           npm ci --only=production
           echo "Npm dependencies installation completed"
           
-          # Build React app
+          # Build React app with environment variables
           echo "Building React app..."
+          echo "Creating .env file..."
+          echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" > .env
+          echo "API Base URL: ${{ secrets.REACT_APP_API_BASE_URL }}"
           npm run build
           echo "React build completed"
           
